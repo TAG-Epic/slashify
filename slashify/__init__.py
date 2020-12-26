@@ -32,6 +32,7 @@ class Slashify:
             if self.started:
                 return
             await self.start()
+            self.started = True
 
     def parse_param(self, old_param):
         param_name, param_value = old_param
