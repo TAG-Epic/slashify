@@ -24,16 +24,9 @@ param_types = {
 class Slashify:
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.started = False
         self.bot.add_listener(self.on_dispatch, "on_socket_response")
         self.logger = getLogger("slashify")
-
-        @self.bot.listen()
-        async def on_ready():
-            if self.started:
-                return
-            await self.start()
-            self.started = True
+        self.bot.loop.create_task(self.start())
 
     def parse_param(self, old_param):
         param_name, param_value = old_param
@@ -64,6 +57,7 @@ class Slashify:
         return new_params
 
     async def start(self):
+        await self.bot.wait_until_ready()
         for command in self.bot.commands:
             command_data = self.add_command(command)
             route = Route("POST", "/applications/{client_id}/commands", client_id=self.bot.user.id)
