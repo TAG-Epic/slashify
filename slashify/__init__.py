@@ -66,8 +66,7 @@ class Slashify:
     async def start(self):
         for command in self.bot.commands:
             command_data = self.add_command(command)
-            route = Route("POST", "/applications/{client_id}/guilds/{guild_id}/commands", client_id=self.bot.user.id,
-                          guild_id=784592146182570015)
+            route = Route("POST", "/applications/{client_id}/commands", client_id=self.bot.user.id)
             await self.bot.http.request(route, json=command_data)
 
     def add_command(self, command):
