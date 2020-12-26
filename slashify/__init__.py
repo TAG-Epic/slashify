@@ -6,23 +6,24 @@ from discord.http import Route
 from discord import Message, Guild, User, TextChannel, Role, VoiceChannel
 from logging import getLogger
 
+param_types = {
+    int: 4,
+    converter.IDConverter: 4,
+    bool: 5,
+    User: 6,
+    converter.UserConverter: 6,
+    TextChannel: 7,
+    VoiceChannel: 7,
+    converter.TextChannelConverter: 7,
+    converter.VoiceChannelConverter: 7,
+    Role: 8,
+    converter.RoleConverter: 8,
+}
+
 
 class Slashify:
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.param_types = {
-            int: 4,
-            converter.IDConverter: 4,
-            bool: 5,
-            User: 6,
-            converter.UserConverter: 6,
-            TextChannel: 7,
-            VoiceChannel: 7,
-            converter.TextChannelConverter: 7,
-            converter.VoiceChannelConverter: 7,
-            Role: 8,
-            converter.RoleConverter: 8,
-        }
         self.started = False
         self.bot.add_listener(self.on_dispatch, "on_socket_response")
         self.logger = getLogger("slashify")
@@ -49,10 +50,10 @@ class Slashify:
         else:
             param["required"] = True
         if isinstance(annotation, Choices):
-            param["type"] = self.param_types.get(annotation.basetype, 3)
+            param["type"] = param_types.get(annotation.basetype, 3)
             param["choices"] = [{"name": name, "value": value} for name, value in annotation.choices]
         else:
-            param["type"] = self.param_types.get(annotation, 3)
+            param["type"] = param_types.get(annotation, 3)
         return param
 
     def parse_params(self, params):
